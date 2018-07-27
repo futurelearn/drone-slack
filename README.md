@@ -4,4 +4,4 @@ A Ruby Drone plugin to send messages to Slack.
 
 ## Updating the template
 
-Edit the `payload` method in [lib/futurelearn_drone_slack.rb].
+Edit the `template` method in [drone-slack.rb].

@@ -1,9 +1,7 @@
 FROM ruby:2.5.1-slim
 
-WORKDIR /usr/src/app
+COPY drone-slack.rb /bin/drone-slack
 
-COPY . .
+RUN gem install --no-document httparty
 
-RUN bundle install
-
-CMD ["./run.rb"]
+CMD ["/bin/drone-slack"]
