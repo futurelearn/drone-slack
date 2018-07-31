@@ -33,8 +33,8 @@ class DroneSlack
               short: true,
             },
             {
-              title: "Build time",
-              value: time_taken,
+              title: "Commit message",
+              value: commit_title,
               short: true,
             }
           ]
@@ -55,14 +55,18 @@ class DroneSlack
     if status == "success"
       {
         color: "good",
-        message: ":tada: Succeeded :tada:"
+        message: ":tada: Succeeded (#{time_taken}) :tada:"
       }
     else
       {
         color: "danger",
-        message: ":crying_cat_face: Failed :sadparrot:"
+        message: ":crying_cat_face: Failed (#{time_taken}) :sadparrot:"
       }
     end
+  end
+
+  def commit_title
+    commit_message.each_line.to_a.map(&:strip).first
   end
 
   def time_taken
@@ -144,6 +148,10 @@ class DroneSlack
 
   def sha
     drone_env("commit_sha")
+  end
+
+  def commit_message
+    drone_env("commit_message")
   end
 
 end
