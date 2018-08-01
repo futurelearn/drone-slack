@@ -63,7 +63,7 @@ class DroneSlack
   def commit_summary
     [
       commit_title,
-      "(<#{commit_link}|#{sha}> / #{branch})"
+      "(<#{commit_link}|#{sha[0..7]}> / #{branch})"
     ].join("\n")
   end
 
