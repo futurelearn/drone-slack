@@ -30,7 +30,7 @@ class DroneSlack
             {
               title: "Commit",
               value: commit_summary,
-              short: true,
+              short: false,
             }
           ]
         }
