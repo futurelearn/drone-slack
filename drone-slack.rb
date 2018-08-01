@@ -28,13 +28,8 @@ class DroneSlack
               short: true,
             },
             {
-              title: "Branch",
-              value: branch,
-              short: true,
-            },
-            {
-              title: "Commit message",
-              value: commit_title,
+              title: "Commit",
+              value: commit_summary,
               short: true,
             }
           ]
@@ -63,6 +58,13 @@ class DroneSlack
         message: ":crying_cat_face: Failed (#{time_taken}) :sadparrot:"
       }
     end
+  end
+
+  def commit_summary
+    [
+      commit_title,
+      "(<#{commit_link}|#{sha}> / #{branch})"
+    ].join("\n")
   end
 
   def commit_title
@@ -152,6 +154,10 @@ class DroneSlack
 
   def commit_message
     drone_env("commit_message")
+  end
+
+  def commit_link
+    drone_env("commit_link")
   end
 
 end
