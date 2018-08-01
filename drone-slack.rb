@@ -14,7 +14,7 @@ class DroneSlack
         {
           fallback: "Drone build #{build} #{status}",
           color: build_status[:color],
-          title: "#{repo_name}##{sha[0...7]}",
+          title: "#{repo_name} (##{build})",
           title_link: link,
           fields: [
             {
