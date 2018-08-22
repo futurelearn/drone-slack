@@ -1,6 +1,6 @@
 FROM ruby:2.5.1-slim
 
-ENV LANG=en_GB.UTF-8
+ENV LANG=C.UTF-8
 
 COPY drone-slack.rb /bin/drone-slack
 
