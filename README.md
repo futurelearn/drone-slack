@@ -4,11 +4,11 @@ A Ruby Drone plugin to send messages to Slack.
 
 ## Updating the template
 
-Edit the `template` method in [[drone-slack.rb]].
+Edit the `template` method in [drone-slack.rb](drone-slack.rb).
 
 ## Running locally
 
-To test locally, copy [[.env.example]] to `.env` and change the values accordingly.
+To test locally, copy [.env.example](.env.example) to `.env` and change the values accordingly.
 
 ### Docker
 
@@ -32,4 +32,4 @@ You can wrap this into your environment:
 
 Then run the script:
 
-ruby drone-slack.rb
+`ruby drone-slack.rb`
