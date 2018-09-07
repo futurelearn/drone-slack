@@ -124,7 +124,7 @@ class DroneSlack
   end
 
   def recovery_mode
-    set_parameter('recovery_mode')
+    set_parameter('recovery_mode', false)
   end
 
   # These are environment variables set by Drone itself
