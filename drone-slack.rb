@@ -39,10 +39,15 @@ class DroneSlack
   end
 
   def notify
-    HTTParty.post(
-      webhook,
-      body: template,
-    ).body
+    if post_check
+      puts "Posting message to Slack"
+      HTTParty.post(
+        webhook,
+        body: template,
+      ).body
+    else
+      puts "Build in good state. Not posting Slack message."
+    end
   end
 
   # Produces a hash depending on the status of the build
@@ -51,6 +56,11 @@ class DroneSlack
       {
         color: "good",
         message: ":tada: Succeeded (#{time_taken}) :tada:"
+      }
+    elsif status == 'success' && prev_build_status == 'failure'
+      {
+        color: "good",
+        message: ":sweat_smile: Recovered (#{time_taken}) :nail_care:"
       }
     else
       {
@@ -84,6 +94,18 @@ class DroneSlack
     Time.at(seconds).utc.strftime("%H:%M:%S")
   end
 
+  def post_check
+    return true unless recovery_mode
+
+    if status == 'success' && prev_build_status == 'failure'
+      true
+    elsif status == 'failure'
+      true
+    else
+      false
+    end
+  end
+
   def drone_env(name)
     ENV.fetch("DRONE_#{name.upcase}", nil)
   end
@@ -107,6 +129,10 @@ class DroneSlack
 
   def channel
     set_parameter("channel")
+  end
+
+  def recovery_mode
+    set_parameter("recovery_mode")
   end
 
   # These are environment variables set by Drone itself
@@ -160,6 +186,9 @@ class DroneSlack
     drone_env("commit_link")
   end
 
+  def prev_build_status
+    drone_env("prev_build_status")
+  end
 end
 
 DroneSlack.new.notify
