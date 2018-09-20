@@ -52,15 +52,15 @@ class DroneSlack
 
   # Produces a hash depending on the status of the build
   def build_status
-    if status == 'success'
-      {
-        color: 'good',
-        message: ":tada: Succeeded (#{time_taken}) :tada:"
-      }
-    elsif status == 'success' && prev_build_status == 'failure'
+    if status == 'success' && prev_build_status == 'failure'
       {
         color: 'good',
         message: ":sweat_smile: Recovered (#{time_taken}) :nail_care:"
+      }
+    elsif status == 'success'
+      {
+        color: 'good',
+        message: ":tada: Succeeded (#{time_taken}) :tada:"
       }
     else
       {
