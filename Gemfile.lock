@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/Futurelearn/drone-plugin-ruby.git
+  revision: 84e33641c105eca38a829b1dd0413ed555ae06d5
+  specs:
+    drone-plugin (1.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -9,7 +15,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  drone-plugin!
   httparty
 
 BUNDLED WITH
-   1.16.2
+   1.17.3

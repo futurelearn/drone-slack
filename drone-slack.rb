@@ -1,9 +1,16 @@
 #!/usr/bin/env ruby
 
+require 'drone_plugin'
 require 'httparty'
 require 'json'
 
 class DroneSlack
+  attr_reader :plugin
+
+  def initialize
+    @plugin = DronePlugin.new
+  end
+
   # Update this template for the output into Slack.
   #
   # https://api.slack.com/docs/message-attachments
@@ -12,10 +19,10 @@ class DroneSlack
       channel: channel,
       attachments: [
         {
-          fallback: "Drone build #{build} #{status}",
+          fallback: "Drone build #{plugin.build} #{plugin.status}",
           color: build_status[:color],
-          title: "#{repo_name} (##{build})",
-          title_link: link,
+          title: "#{plugin.repo_name} (##{plugin.build})",
+          title_link: plugin.link,
           fields: [
             {
               title: 'Status',
@@ -24,12 +31,12 @@ class DroneSlack
             },
             {
               title: 'Committer',
-              value: author,
+              value: plugin.author,
               short: true
             },
             {
               title: 'Commit',
-              value: commit_summary,
+              value: plugin.commit_summary,
               short: false
             }
           ]
@@ -52,7 +59,7 @@ class DroneSlack
 
   # Produces a hash depending on the status of the build
   def build_status
-    if status == 'success' && prev_build_status == 'failure'
+    if plugin.status == 'success' && plugin.prev_build_status == 'failure'
       {
         color: 'good',
         message: ":sweat_smile: Recovered (#{time_taken}) :nail_care:"
@@ -73,16 +80,16 @@ class DroneSlack
   def commit_summary
     [
       commit_title,
-      "(<#{commit_link}|#{sha[0..7]}> / #{branch})"
+      "(<#{plugin.commit_link}|#{plugin.sha[0..7]}> / #{plugin.branch})"
     ].join("\n")
   end
 
   def commit_title
-    commit_message.each_line.to_a.map(&:strip).first
+    plugin.commit_message.each_line.to_a.map(&:strip).first
   end
 
   def time_taken
-    seconds = finished.to_i - started.to_i
+    seconds = plugin.finished.to_i - plugin.started.to_i
     return "#{seconds}s" if seconds < 60
 
     return Time.at(seconds).utc.strftime('%Mm %Ss') if seconds < 3600
@@ -93,93 +100,24 @@ class DroneSlack
   def post_check
     return true unless recovery_mode
 
-    if status == 'success' && prev_build_status == 'failure'
+    if plugin.status == 'success' && plugin.prev_build_status == 'failure'
       true
     else
-      status == 'failure'
+      plugin.status == 'failure'
     end
-  end
-
-  def drone_env(name)
-    ENV.fetch("DRONE_#{name.upcase}", nil)
-  end
-
-  def set_parameter(parameter_name, required = true)
-    parameter = 'PLUGIN_' + parameter_name.upcase
-
-    abort("Must set #{parameter}") if required && ENV[parameter].nil?
-
-    return false if ENV[parameter].nil?
-
-    ENV[parameter]
   end
 
   # Fetches the parameters set by the by Drone file
   def webhook
-    set_parameter('webhook')
+    plugin.set_parameter('webhook')
   end
 
   def channel
-    set_parameter('channel')
+    plugin.set_parameter('channel')
   end
 
   def recovery_mode
-    set_parameter('recovery_mode', false)
-  end
-
-  # These are environment variables set by Drone itself
-  #
-  # http://readme.drone.io/0.5/usage/environment-reference/
-  def author
-    drone_env('commit_author')
-  end
-
-  def branch
-    drone_env('commit_branch')
-  end
-
-  def build
-    drone_env('build_number')
-  end
-
-  def status
-    drone_env('job_status')
-  end
-
-  def started
-    drone_env('build_started')
-  end
-
-  def finished
-    drone_env('build_finished')
-  end
-
-  def link
-    drone_env('build_link')
-  end
-
-  def repo_name
-    drone_env('repo')
-  end
-
-  def repo_owner
-    drone_env('repo_owner')
-  end
-
-  def sha
-    drone_env('commit_sha')
-  end
-
-  def commit_message
-    drone_env('commit_message')
-  end
-
-  def commit_link
-    drone_env('commit_link')
-  end
-
-  def prev_build_status
-    drone_env('prev_build_status')
+    plugin.set_parameter('recovery_mode', false)
   end
 end
 
